@@ -9,8 +9,8 @@ Future<void> addUser(String userID, String email, bool onBoardStatus) {
         'email': email,
         'isOnboarded': onBoardStatus,
         'status': 'free',
-        'viewCredit': 10,
-        'searchCredit': 5
+        'credit': 50,
+        'accountDate': DateTime.now(),
       })
       .then((value) => print("User added successfully!"))
       .catchError((error) => print("Failed to add user: $error"));
@@ -63,15 +63,12 @@ Future<void> updateUserOnboardStatus(String userId, bool onBoardStatus) async {
 Future<void> updateUserAccountStatus(
     String userId, String accountStatus) async {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  int viewCredit = 0;
-  int searchCredit = 0;
+  int credit = 0;
 
   if (accountStatus == 'Basic') {
-    viewCredit = 20;
-    searchCredit = 10;
+    credit = 50;
   } else if (accountStatus == 'Premium') {
-    viewCredit = 50;
-    searchCredit = 20;
+    credit = 100;
   }
 
   try {
@@ -80,8 +77,7 @@ Future<void> updateUserAccountStatus(
 
     await userRef.update({
       'status': accountStatus,
-      'viewCredit': viewCredit,
-      'searchCredit': searchCredit,
+      'credit': credit,
     }).then((value) => print('status update'));
 
     print("User Account status updated successfully!");
@@ -91,7 +87,8 @@ Future<void> updateUserAccountStatus(
 }
 
 // Update by Paywall According to daily addtition
-Future<void> getAndAddUserCredits(String userId, String email) async {
+Future<void> getAndAddUserCredits(
+    String userId, String email, int updateValue) async {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   DocumentReference userRef = users.doc(userId);
 
@@ -103,8 +100,7 @@ Future<void> getAndAddUserCredits(String userId, String email) async {
       var userData = querySnapshot.docs.first.data();
       if (userData != null && userData is Map<String, dynamic>) {
         await userRef.update({
-          'viewCredit': userData['viewCredit'] + 10,
-          'searchCredit': userData['searchCredit'] + 5,
+          'credit': userData['credit'] + updateValue,
         }).then((value) => print('Fields updated'));
       } else {
         print('Credit field not found or null.');
@@ -117,7 +113,33 @@ Future<void> getAndAddUserCredits(String userId, String email) async {
   }
 }
 
-Future<bool> getAndUpdateUserViewCredit(String userId, String email) async {
+// Get User Credit
+Future<int?> getUserCredits(String email) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  try {
+    QuerySnapshot querySnapshot =
+        await users.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userData = querySnapshot.docs.first.data();
+      if (userData != null && userData is Map<String, dynamic>) {
+        return userData['credit'];
+      } else {
+        print('Credit field not found or null.');
+        return 0;
+      }
+    } else {
+      print('User not found!');
+      return 0;
+    }
+  } catch (e) {
+    print('Error getting user onboard status: $e');
+    return 0;
+  }
+}
+
+Future<bool> getAndUpdateUserCredit(String userId, String email) async {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   DocumentReference userRef = users.doc(userId);
 
@@ -128,12 +150,12 @@ Future<bool> getAndUpdateUserViewCredit(String userId, String email) async {
     if (querySnapshot.docs.isNotEmpty) {
       var userData = querySnapshot.docs.first.data();
       if (userData != null && userData is Map<String, dynamic>) {
-        if (userData['viewCredit'] == 0) {
+        if (userData['credit'] == 0) {
           print('no Credit');
           return false;
         } else {
           await userRef.update({
-            'viewCredit': userData['viewCredit'] - 1,
+            'credit': userData['credit'] - 1,
           }).then((value) {
             print('Fields updated');
           });
@@ -164,12 +186,12 @@ Future<bool> getAndUpdateSearchCredit(String userId, String email) async {
     if (querySnapshot.docs.isNotEmpty) {
       var userData = querySnapshot.docs.first.data();
       if (userData != null && userData is Map<String, dynamic>) {
-        if (userData['searchCredit'] == 0) {
+        if (userData['credit'] == 0) {
           print('no Credit');
           return false;
         } else {
           await userRef.update({
-            'searchCredit': userData['searchCredit'] - 1,
+            'credit': userData['credit'] - 1,
           }).then((value) {
             print('Fields updated');
           });

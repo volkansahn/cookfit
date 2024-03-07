@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  adapty_flutter:
+    dependency: "direct main"
+    description:
+      name: adapty_flutter
+      sha256: "8cdd7a85b97969385a7d2c452c68782273ce50f2cc18a7351bb27a0977423aff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.3"
   animations:
     dependency: transitive
     description:
@@ -528,6 +536,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.0"
   introduction_screen:
     dependency: "direct main"
     description:

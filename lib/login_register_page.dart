@@ -1,6 +1,7 @@
 import 'package:cookfit/auth.dart';
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/onboarding_page.dart';
+import 'package:cookfit/reset_password_page.dart';
 import 'package:cookfit/widget_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,11 @@ class LoginPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/cook_fit_logo.png',
+              height: 100.0,
+              width: 100.0,
+            ),
             SizedBox(
               width: MediaQuery.of(context).size.width / 2,
               child: TextField(
@@ -68,6 +74,19 @@ class LoginPage extends StatelessWidget {
               child: const Text('Login'),
             ),
             const SizedBox(
+              height: 10.0,
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ResetPasswordPage(),
+                  ),
+                );
+              },
+              child: const Text('Forgot Password'),
+            ),
+            const SizedBox(
               height: 30.0,
             ),
             TextButton(
@@ -112,6 +131,11 @@ class _CreateAccountState extends State<CreateAccount> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/cook_fit_logo.png',
+              height: 300.0,
+              width: 300.0,
+            ),
             SizedBox(
               width: MediaQuery.of(context).size.width / 2,
               child: TextField(

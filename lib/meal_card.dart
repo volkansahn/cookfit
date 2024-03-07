@@ -34,7 +34,7 @@ class _MealCardState extends State<MealCard> {
     return GestureDetector(
       onTap: () async {
         if (!widget.isBookmarked) {
-          hasCredit = await getAndUpdateUserViewCredit(
+          hasCredit = await getAndUpdateUserCredit(
             FirebaseAuth.instance.currentUser?.uid ?? '',
             FirebaseAuth.instance.currentUser?.email ?? '',
           );

@@ -49,5 +49,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>AdaptyPublicSdkKey</key>
+    <string>public_live_UdEL4sm1.6EjDYK1QnQi4gGP7tKvc</string>
 </dict>
 </plist>

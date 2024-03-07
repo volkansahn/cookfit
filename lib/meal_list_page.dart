@@ -30,6 +30,8 @@ class _MealListPageState extends State<MealListPage> {
   bool isBookmarked = false;
   BannerAd? _bannerAd;
   bool _isLoaded = false;
+  int? userCredits;
+
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
@@ -80,6 +82,7 @@ class _MealListPageState extends State<MealListPage> {
       userBookmarkList =
           userBookmarks.map((bookmark) => Meal.fromMap(bookmark)).toList();
     });
+    checkCredit();
   }
 
   @override
@@ -89,6 +92,31 @@ class _MealListPageState extends State<MealListPage> {
       userBookmarkList =
           userBookmarks.map((bookmark) => Meal.fromMap(bookmark)).toList();
     });
+    checkCredit();
+  }
+
+  void checkCredit() {
+    getUserCredits(FirebaseAuth.instance.currentUser!.email!).then((credit) {
+      setState(() {
+        userCredits = credit;
+      });
+    });
+  }
+
+  Widget remainingCredit() {
+    return Container(
+      child: Row(
+        children: [
+          Text('Credit :',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text('$userCredits',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.amber)),
+        ],
+      ),
+    );
   }
 
   Future<List<dynamic>> getUserBookmarks() async {
@@ -131,6 +159,13 @@ class _MealListPageState extends State<MealListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Meal List"),
+        centerTitle: true,
+        actions: [
+          remainingCredit(),
+          SizedBox(
+            width: 20,
+          )
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.all(10),

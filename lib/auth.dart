@@ -46,4 +46,22 @@ class AuthService {
       return e.toString();
     }
   }
+
+  Future<String?> resetPassword({required String email}) async {
+    print(email);
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return 'Recover Email has been sent';
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        return 'The account already exists for that email.';
+      } else {
+        return e.message;
+      }
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:adapty_flutter/adapty_flutter.dart';
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/meal_list_page.dart';
+import 'package:cookfit/screens/paywall_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -37,6 +39,8 @@ class _SearchPageState extends State<SearchPage> {
   bool _showAllIntolerance = false;
   BannerAd? _bannerAd;
   bool _isLoaded = false;
+  AdaptyPaywall? paywall;
+
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
@@ -193,7 +197,29 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               );
             } else {
-              print('Put paywall here');
+              try {
+                paywall = await Adapty().getPaywall(placementId: "123456");
+                print('HEYOOOO');
+              } on AdaptyError catch (adaptyError) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
+              try {
+                final products =
+                    await Adapty().getPaywallProducts(paywall: paywall!);
+                // the requested products array
+              } on AdaptyError catch (adaptyError) {
+                print('adapty');
+                // handle the error
+              } catch (e) {
+                print('error');
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PaywallScreen(paywall: paywall!)),
+              );
             }
           },
           child: const Text(

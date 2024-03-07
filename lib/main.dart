@@ -1,3 +1,4 @@
+import 'package:adapty_flutter/adapty_flutter.dart';
 import 'package:cookfit/firebase_options.dart';
 import 'package:cookfit/widget_tree.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Adapty().setLogLevel(AdaptyLogLevel.verbose);
+  Adapty().activate();
   runApp(const MyApp());
 }
 
