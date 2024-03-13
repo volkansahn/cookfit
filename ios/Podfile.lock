@@ -632,6 +632,11 @@ PODS:
   - adapty_flutter (2.9.3):
     - Adapty (= 2.9.6)
     - Flutter
+  - adapty_ui_flutter (2.1.0):
+    - AdaptyUI (= 2.1.2)
+    - Flutter
+  - AdaptyUI (2.1.2):
+    - Adapty (= 2.9.6)
   - audio_session (0.0.1):
     - Flutter
   - BoringSSL-GRPC (0.0.24):
@@ -836,6 +841,7 @@ PODS:
 
 DEPENDENCIES:
   - adapty_flutter (from `.symlinks/plugins/adapty_flutter/ios`)
+  - adapty_ui_flutter (from `.symlinks/plugins/adapty_ui_flutter/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -856,6 +862,7 @@ SPEC REPOS:
   trunk:
     - abseil
     - Adapty
+    - AdaptyUI
     - BoringSSL-GRPC
     - Firebase
     - FirebaseAppCheckInterop
@@ -881,6 +888,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   adapty_flutter:
     :path: ".symlinks/plugins/adapty_flutter/ios"
+  adapty_ui_flutter:
+    :path: ".symlinks/plugins/adapty_ui_flutter/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
   cloud_firestore:
@@ -916,6 +925,8 @@ SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
   Adapty: 18325c1f4d69ead08042e1c03218d2cc3f9b9693
   adapty_flutter: 2499028dcada42dcf8849341ca6fd4cc697d6d24
+  adapty_ui_flutter: d5f38a74a59f3010236643be998d7eba12b18ce7
+  AdaptyUI: dcc35eb0ee4a9daf7a0eb84804449065758e82b5
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: ecf08badc10198974885617f14819201d9a42575

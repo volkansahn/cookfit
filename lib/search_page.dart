@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:adapty_flutter/adapty_flutter.dart';
+import 'package:adapty_ui_flutter/adapty_ui_flutter.dart';
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/meal_list_page.dart';
-import 'package:cookfit/screens/paywall_screen.dart';
+import 'package:cookfit/my_custom_adapty_observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -40,6 +41,7 @@ class _SearchPageState extends State<SearchPage> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
   AdaptyPaywall? paywall;
+  AdaptyUIView? view;
 
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/6300978111'
@@ -47,7 +49,6 @@ class _SearchPageState extends State<SearchPage> {
 
   void initState() {
     super.initState();
-
     checkStatus().then(
       (value) {
         if (value != 'Premium') {
@@ -112,6 +113,16 @@ class _SearchPageState extends State<SearchPage> {
 
   String baseURL =
       'https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeNutrition=true&apiKey=1ed8f4808298475983d634e9d6cb1373';
+
+  void paywallViewDidPerformAction(AdaptyUIView view, AdaptyUIAction action) {
+    switch (action.type) {
+      case AdaptyUIActionType.close:
+        view.dismiss();
+        break;
+      default:
+        break;
+    }
+  }
 
   Widget _letsCookButton() {
     return Align(
@@ -206,20 +217,21 @@ class _SearchPageState extends State<SearchPage> {
                 // handle the error
               }
               try {
-                final products =
-                    await Adapty().getPaywallProducts(paywall: paywall!);
-                // the requested products array
-              } on AdaptyError catch (adaptyError) {
-                print('adapty');
+                view = await AdaptyUI()
+                    .createPaywallView(paywall: paywall!, locale: 'en');
+              } on AdaptyError catch (e) {
                 // handle the error
               } catch (e) {
-                print('error');
+                // handle the error
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PaywallScreen(paywall: paywall!)),
-              );
+              try {
+                await view!.present();
+                AdaptyUI().addObserver(MyCustomAdaptyObserver());
+              } on AdaptyError catch (e) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
             }
           },
           child: const Text(
@@ -309,415 +321,426 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  const Text(
-                    "Ingredients",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          // Return the appropriate color based on the button's state
-                          if (states.contains(MaterialState.pressed)) {
-                            // Return the color when the button is pressed
-                            return const Color.fromARGB(255, 37, 107, 39);
-                          }
-                          // Return the default color when the button is not pressed
-                          return const Color.fromARGB(255, 86, 207, 90);
-                        },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Ingredients",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    onPressed: () {
-                      showTextInputDialog(
-                        context: context,
-                        title: "Ingredient",
-                        message: 'Enter Ingredient Here',
-                        okLabel: "Ok",
-                        cancelLabel: "Cancel",
-                        barrierDismissible: false,
-                        textFields: [
-                          const DialogTextField(
-                            keyboardType: TextInputType.number,
-                            hintText: 'Lelegume',
-                          )
-                        ],
-                      ).then((value) {
-                        setState(() {
-                          _ingredientButtons.add(value![0].toString());
-                        });
-                      });
-                    },
-                    child: const Text(
-                      "Add",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color?>(
+                            (Set<MaterialState> states) {
+                              // Return the appropriate color based on the button's state
+                              if (states.contains(MaterialState.pressed)) {
+                                // Return the color when the button is pressed
+                                return const Color.fromARGB(255, 37, 107, 39);
+                              }
+                              // Return the default color when the button is not pressed
+                              return const Color.fromARGB(255, 86, 207, 90);
+                            },
+                          ),
+                        ),
+                        onPressed: () {
+                          showTextInputDialog(
+                            context: context,
+                            title: "Ingredient",
+                            message: 'Enter Ingredient Here',
+                            okLabel: "Ok",
+                            cancelLabel: "Cancel",
+                            barrierDismissible: false,
+                            textFields: [
+                              const DialogTextField(
+                                keyboardType: TextInputType.number,
+                                hintText: 'Lelegume',
+                              )
+                            ],
+                          ).then((value) {
+                            setState(() {
+                              _ingredientButtons.add(value![0].toString());
+                            });
+                          });
+                        },
+                        child: const Text(
+                          "Add",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: Wrap(
-                  spacing: 8.0,
-                  runSpacing: 8.0,
-                  children: _ingredientButtons
-                      .map(
-                        (ingredient) => GestureDetector(
-                          onTap: () {
-                            // Show bottom sheet when the ingredient chip is tapped
-                            _showIngredientOptionsBottomSheet(
-                                context, ingredient);
-                          },
-                          child: Chip(
-                            side: BorderSide.none,
-                            elevation: 0.5,
-                            label: Text(
-                              ingredient.toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: _ingredientButtons
+                          .map(
+                            (ingredient) => GestureDetector(
+                              onTap: () {
+                                // Show bottom sheet when the ingredient chip is tapped
+                                _showIngredientOptionsBottomSheet(
+                                    context, ingredient);
+                              },
+                              child: Chip(
+                                side: BorderSide.none,
+                                elevation: 0.5,
+                                label: Text(
+                                  ingredient.toUpperCase(),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                backgroundColor: Colors.amber,
+                              ),
                             ),
-                            backgroundColor: Colors.amber,
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 1.0,
+                  ),
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Cuisine Selection',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showAllCuisine = !_showAllCuisine;
+                              });
+                            },
+                            child: Text(
+                              _showAllCuisine ? 'See Less' : 'See More',
+                              style: const TextStyle(
+                                color: Colors.blue, // Change color as needed
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      GroupButton(
+                        options: GroupButtonOptions(
+                          borderRadius: BorderRadius.circular(10),
+                          unselectedColor:
+                              const Color.fromARGB(255, 233, 226, 203),
+                          unselectedTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          selectedColor: Colors.amber,
+                          selectedTextStyle: const TextStyle(
+                            color: Colors.black,
                           ),
                         ),
-                      )
-                      .toList(),
-                ),
-              ),
-              const Divider(
-                thickness: 1.0,
-              ),
-              const SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Cuisine Selection',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      GestureDetector(
-                        onTap: () {
+                        isRadio: true,
+                        enableDeselect: true,
+                        controller: _cuisineController,
+                        onSelected: (value, index, isSelected) {
                           setState(() {
-                            _showAllCuisine = !_showAllCuisine;
+                            _cuisineDropValue = value;
                           });
                         },
-                        child: Text(
-                          _showAllCuisine ? 'See Less' : 'See More',
-                          style: const TextStyle(
-                            color: Colors.blue, // Change color as needed
-                          ),
-                        ),
+                        buttons: _showAllCuisine
+                            ? [
+                                'African',
+                                'Asian',
+                                'American',
+                                'British',
+                                'Cajun',
+                                'Caribbean',
+                                'Chinese',
+                                'Eastern European',
+                                'European',
+                                'French',
+                                'German',
+                                'Greek',
+                                'Indian',
+                                'Irish',
+                                'Italian',
+                                'Japanese',
+                                'Jewish',
+                                'Korean',
+                                'Latin American',
+                                'Mediterranean',
+                                'Mexican',
+                                'Middle Eastern',
+                                'Nordic',
+                                'Southern',
+                                'Spanish',
+                                'Thai',
+                                'Vietnamese'
+                              ]
+                            : [
+                                'African',
+                                'Asian',
+                                'American'
+                              ], // Show only 3 buttons initially
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  GroupButton(
-                    options: GroupButtonOptions(
-                      borderRadius: BorderRadius.circular(10),
-                      unselectedColor: const Color.fromARGB(255, 233, 226, 203),
-                      unselectedTextStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      selectedColor: Colors.amber,
-                      selectedTextStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    isRadio: true,
-                    enableDeselect: true,
-                    controller: _cuisineController,
-                    onSelected: (value, index, isSelected) {
-                      setState(() {
-                        _cuisineDropValue = value;
-                      });
-                    },
-                    buttons: _showAllCuisine
-                        ? [
-                            'African',
-                            'Asian',
-                            'American',
-                            'British',
-                            'Cajun',
-                            'Caribbean',
-                            'Chinese',
-                            'Eastern European',
-                            'European',
-                            'French',
-                            'German',
-                            'Greek',
-                            'Indian',
-                            'Irish',
-                            'Italian',
-                            'Japanese',
-                            'Jewish',
-                            'Korean',
-                            'Latin American',
-                            'Mediterranean',
-                            'Mexican',
-                            'Middle Eastern',
-                            'Nordic',
-                            'Southern',
-                            'Spanish',
-                            'Thai',
-                            'Vietnamese'
-                          ]
-                        : [
-                            'African',
-                            'Asian',
-                            'American'
-                          ], // Show only 3 buttons initially
+                  const Divider(
+                    thickness: 1.0,
                   ),
-                ],
-              ),
-              const Divider(
-                thickness: 1.0,
-              ),
-              const SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Meal Type Selection',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Meal Type Selection',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showAllMealType = !_showAllMealType;
+                              });
+                            },
+                            child: Text(
+                              _showAllMealType ? 'See Less' : 'See More',
+                              style: const TextStyle(
+                                color: Colors.blue, // Change color as needed
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showAllMealType = !_showAllMealType;
-                          });
-                        },
-                        child: Text(
-                          _showAllMealType ? 'See Less' : 'See More',
-                          style: const TextStyle(
-                            color: Colors.blue, // Change color as needed
+                      const SizedBox(height: 10),
+                      GroupButton(
+                        options: GroupButtonOptions(
+                          borderRadius: BorderRadius.circular(10),
+                          unselectedColor:
+                              const Color.fromARGB(255, 233, 226, 203),
+                          unselectedTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          selectedColor: Colors.amber,
+                          selectedTextStyle: const TextStyle(
+                            color: Colors.black,
                           ),
                         ),
+                        isRadio: true,
+                        enableDeselect: true,
+                        controller: _mealController,
+                        onSelected: (value, index, isSelected) {
+                          setState(() {
+                            _mealDropValue = value;
+                          });
+                        },
+                        buttons: _showAllMealType
+                            ? const [
+                                "Main Course",
+                                "Side Dish",
+                                "Dessert",
+                                "Appetizer",
+                                "Salad",
+                                "Bread",
+                                "Breakfast",
+                                "Soup",
+                                "Beverage",
+                                "Sauce",
+                                "Marinade",
+                                "Fingerfood",
+                                "Snack",
+                                "Drink"
+                              ]
+                            : ["Main Course", "Side Dish"],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  GroupButton(
-                    options: GroupButtonOptions(
-                      borderRadius: BorderRadius.circular(10),
-                      unselectedColor: const Color.fromARGB(255, 233, 226, 203),
-                      unselectedTextStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      selectedColor: Colors.amber,
-                      selectedTextStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    isRadio: true,
-                    enableDeselect: true,
-                    controller: _mealController,
-                    onSelected: (value, index, isSelected) {
-                      setState(() {
-                        _mealDropValue = value;
-                      });
-                    },
-                    buttons: _showAllMealType
-                        ? const [
-                            "Main Course",
-                            "Side Dish",
-                            "Dessert",
-                            "Appetizer",
-                            "Salad",
-                            "Bread",
-                            "Breakfast",
-                            "Soup",
-                            "Beverage",
-                            "Sauce",
-                            "Marinade",
-                            "Fingerfood",
-                            "Snack",
-                            "Drink"
-                          ]
-                        : ["Main Course", "Side Dish"],
+                  const Divider(
+                    thickness: 1.0,
                   ),
-                ],
-              ),
-              const Divider(
-                thickness: 1.0,
-              ),
-              const SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Diet Type Selection',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Diet Type Selection',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showAllDietType = !_showAllDietType;
+                              });
+                            },
+                            child: Text(
+                              _showAllDietType ? 'See Less' : 'See More',
+                              style: const TextStyle(
+                                color: Colors.blue, // Change color as needed
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showAllDietType = !_showAllDietType;
-                          });
-                        },
-                        child: Text(
-                          _showAllDietType ? 'See Less' : 'See More',
-                          style: const TextStyle(
-                            color: Colors.blue, // Change color as needed
+                      const SizedBox(height: 10),
+                      GroupButton(
+                        options: GroupButtonOptions(
+                          borderRadius: BorderRadius.circular(10),
+                          unselectedColor:
+                              const Color.fromARGB(255, 233, 226, 203),
+                          unselectedTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          selectedColor: Colors.amber,
+                          selectedTextStyle: const TextStyle(
+                            color: Colors.black,
                           ),
                         ),
+                        isRadio: true,
+                        enableDeselect: true,
+                        controller: _dietTypeController,
+                        onSelected: (value, index, isSelected) {
+                          setState(() {
+                            _dietTypeDropValue = value;
+                          });
+                        },
+                        buttons: _showAllDietType
+                            ? const [
+                                "Gluten Free",
+                                "Ketogenic",
+                                "Vegetarian",
+                                "Lacto-Vegetarian",
+                                "Ovo-Vegetarian",
+                                "Vegan",
+                                "Pescetarian",
+                                "Paleo",
+                                "Primal",
+                                "Low FODMAP",
+                                "Whole30"
+                              ]
+                            : ["Gluten Free", "Ketogenic"],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  GroupButton(
-                    options: GroupButtonOptions(
-                      borderRadius: BorderRadius.circular(10),
-                      unselectedColor: const Color.fromARGB(255, 233, 226, 203),
-                      unselectedTextStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      selectedColor: Colors.amber,
-                      selectedTextStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    isRadio: true,
-                    enableDeselect: true,
-                    controller: _dietTypeController,
-                    onSelected: (value, index, isSelected) {
-                      setState(() {
-                        _dietTypeDropValue = value;
-                      });
-                    },
-                    buttons: _showAllDietType
-                        ? const [
-                            "Gluten Free",
-                            "Ketogenic",
-                            "Vegetarian",
-                            "Lacto-Vegetarian",
-                            "Ovo-Vegetarian",
-                            "Vegan",
-                            "Pescetarian",
-                            "Paleo",
-                            "Primal",
-                            "Low FODMAP",
-                            "Whole30"
-                          ]
-                        : ["Gluten Free", "Ketogenic"],
+                  const Divider(
+                    thickness: 1.0,
                   ),
-                ],
-              ),
-              const Divider(
-                thickness: 1.0,
-              ),
-              const SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Intolerances Selection',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Intolerances Selection',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showAllIntolerance = !_showAllIntolerance;
+                              });
+                            },
+                            child: Text(
+                              _showAllIntolerance ? 'See Less' : 'See More',
+                              style: const TextStyle(
+                                color: Colors.blue, // Change color as needed
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _showAllIntolerance = !_showAllIntolerance;
-                          });
-                        },
-                        child: Text(
-                          _showAllIntolerance ? 'See Less' : 'See More',
-                          style: const TextStyle(
-                            color: Colors.blue, // Change color as needed
+                      const SizedBox(height: 10),
+                      GroupButton(
+                        options: GroupButtonOptions(
+                          borderRadius: BorderRadius.circular(10),
+                          unselectedColor:
+                              const Color.fromARGB(255, 233, 226, 203),
+                          unselectedTextStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          selectedColor: Colors.amber,
+                          selectedTextStyle: const TextStyle(
+                            color: Colors.black,
                           ),
                         ),
+                        isRadio: false,
+                        controller: _intoleranceController,
+                        onSelected: (value, index, isSelected) {
+                          _selectedIntolerances.add(value);
+                          _selectedIntolerancesIndexes.add(index);
+                        },
+                        buttons: _showAllIntolerance
+                            ? const [
+                                'Dairy',
+                                'Egg',
+                                'Gluten',
+                                'Grain',
+                                'Peanut',
+                                'Seafood',
+                                'Seasame',
+                                'Shellfish',
+                                'Soy',
+                                'Sulfite',
+                                'Tree Nut',
+                                'Wheat'
+                              ]
+                            : ['Dairy', 'Egg', 'Gluten'],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  GroupButton(
-                    options: GroupButtonOptions(
-                      borderRadius: BorderRadius.circular(10),
-                      unselectedColor: const Color.fromARGB(255, 233, 226, 203),
-                      unselectedTextStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      selectedColor: Colors.amber,
-                      selectedTextStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    isRadio: false,
-                    controller: _intoleranceController,
-                    onSelected: (value, index, isSelected) {
-                      _selectedIntolerances.add(value);
-                      _selectedIntolerancesIndexes.add(index);
-                    },
-                    buttons: _showAllIntolerance
-                        ? const [
-                            'Dairy',
-                            'Egg',
-                            'Gluten',
-                            'Grain',
-                            'Peanut',
-                            'Seafood',
-                            'Seasame',
-                            'Shellfish',
-                            'Soy',
-                            'Sulfite',
-                            'Tree Nut',
-                            'Wheat'
-                          ]
-                        : ['Dairy', 'Egg', 'Gluten'],
+                  const Divider(
+                    thickness: 1.0,
                   ),
+                  const SizedBox(height: 20),
+                  if (_bannerAd != null) ...[
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SafeArea(
+                        child: SizedBox(
+                          width: _bannerAd!.size.width.toDouble(),
+                          height: _bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd!),
+                        ),
+                      ),
+                    )
+                  ],
                 ],
               ),
-              const Divider(
-                thickness: 1.0,
-              ),
-              const SizedBox(height: 20),
-              if (_bannerAd != null) ...[
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SafeArea(
-                    child: SizedBox(
-                      width: _bannerAd!.size.width.toDouble(),
-                      height: _bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: _bannerAd!),
-                    ),
-                  ),
-                )
-              ],
-              _letsCookButton(),
-              const SizedBox(height: 5),
-            ],
+            ),
           ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: _letsCookButton(),
+        ),
+        const SizedBox(height: 5),
+      ],
     );
   }
 }

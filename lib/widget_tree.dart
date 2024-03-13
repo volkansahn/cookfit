@@ -1,5 +1,6 @@
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/home_page.dart';
+import 'package:cookfit/loginPage/login_or_register_page.dart';
 import 'package:cookfit/login_register_page.dart';
 import 'package:cookfit/onboarding_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,7 @@ class _WidgetTreeState extends State<WidgetTree> {
         final user = snapshot.data;
         if (user == null) {
           // User not logged in, show login page
-          return LoginPage();
+          return LoginOrRegisterPage();
         } else {
           // User logged in, check isOnboarded status
           return FutureBuilder<bool>(

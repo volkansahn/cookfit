@@ -1,4 +1,7 @@
+import 'package:adapty_flutter/adapty_flutter.dart';
+import 'package:adapty_ui_flutter/adapty_ui_flutter.dart';
 import 'package:cookfit/firestore_database.dart';
+import 'package:cookfit/my_custom_adapty_observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -10,6 +13,8 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AdaptyPaywall? paywall;
+    AdaptyUIView? view;
     return IntroductionScreen(
       dotsDecorator: DotsDecorator(
         size: const Size.square(10.0),
@@ -95,7 +100,33 @@ class OnboardingScreen extends StatelessWidget {
         );
       },
       showNextButton: false, // Set to true to show the next button
-      done: const Text("Got It!"),
+      done: GestureDetector(
+          onTap: () async {
+            try {
+              paywall = await Adapty().getPaywall(placementId: "123456");
+            } on AdaptyError catch (adaptyError) {
+              // handle the error
+            } catch (e) {
+              // handle the error
+            }
+            try {
+              view = await AdaptyUI()
+                  .createPaywallView(paywall: paywall!, locale: 'en');
+            } on AdaptyError catch (e) {
+              // handle the error
+            } catch (e) {
+              // handle the error
+            }
+            try {
+              await view!.present();
+              AdaptyUI().addObserver(MyCustomAdaptyObserver());
+            } on AdaptyError catch (e) {
+              // handle the error
+            } catch (e) {
+              // handle the error
+            }
+          },
+          child: const Text("Got It!")),
     );
   }
 }

@@ -16,6 +16,59 @@ Future<void> addUser(String userID, String email, bool onBoardStatus) {
       .catchError((error) => print("Failed to add user: $error"));
 }
 
+Future<Timestamp> getUserRegisterDate(String email) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  try {
+    QuerySnapshot querySnapshot =
+        await users.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userData = querySnapshot.docs.first.data();
+      if (userData != null &&
+          userData is Map<String, dynamic> &&
+          userData.containsKey('accountDate')) {
+        return userData['accountDate'] ?? "";
+      } else {
+        print('accountDate field not found or null.');
+        return Timestamp.now();
+      }
+    } else {
+      print('User not found!');
+      return Timestamp.now();
+    }
+  } catch (e) {
+    print('Error getting user accountDate status: $e');
+    return Timestamp.now();
+  }
+}
+
+Future<void> refillUserCredits(
+    String userId, String email, int updateValue) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  DocumentReference userRef = users.doc(userId);
+
+  try {
+    QuerySnapshot querySnapshot =
+        await users.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userData = querySnapshot.docs.first.data();
+      if (userData != null && userData is Map<String, dynamic>) {
+        await userRef.update({
+          'credit': updateValue,
+        }).then((value) => print('Fields updated'));
+      } else {
+        print('Credit field not found or null.');
+      }
+    } else {
+      print('User not found!');
+    }
+  } catch (e) {
+    print('Error getting user onboard status: $e');
+  }
+}
+
 Future<bool> getUserOnboardStatus(String email) async {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 

@@ -519,16 +519,22 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
                     Flexible(
                       child: Row(
                         children: [
-                          Text(
-                            '${ingredient?.amount} ${ingredient?.unit} ',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                          Expanded(
+                            child: Text(
+                              '${ingredient?.amount} ${ingredient?.unit} ',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
-                          Text('${ingredient!.name}',
-                              style: const TextStyle(
-                                  fontSize: 18, letterSpacing: 1.15)),
+                          Expanded(
+                            child: Text('${ingredient!.name}',
+                                overflow: TextOverflow.clip,
+                                maxLines: 2,
+                                style: const TextStyle(
+                                    fontSize: 18, letterSpacing: 1.15)),
+                          ),
                         ],
                       ),
                     ),
