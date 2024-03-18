@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cookfit/firestore_database.dart';
+import 'package:cookfit/home_page.dart';
 import 'package:cookfit/meal_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,13 @@ import '../meal.dart';
 
 class MealListPage extends StatefulWidget {
   const MealListPage(
-      {Key? key, required this.fetchURL, required this.userBookmarks})
+      {Key? key,
+      required this.fetchURL,
+      required this.userBookmarks,
+      required this.meals})
       : super(key: key);
+  final List<Meal> meals;
+
   final String fetchURL;
   final List<int> userBookmarks;
 
@@ -31,7 +37,6 @@ class _MealListPageState extends State<MealListPage> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
   int? userCredits;
-
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
@@ -77,12 +82,27 @@ class _MealListPageState extends State<MealListPage> {
         }
       },
     );
-    fetchData();
+    if (widget.fetchURL != 'no') {
+      fetchData();
+    } else if (widget.fetchURL == 'no') {
+      setState(() {
+        loading = false;
+        _meals = widget.meals;
+      });
+    }
     getUserBookmarks().then((List<dynamic> userBookmarks) {
       userBookmarkList =
           userBookmarks.map((bookmark) => Meal.fromMap(bookmark)).toList();
     });
     checkCredit();
+  }
+
+  @override
+  void didUpdateWidget(covariant MealListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // id changed in the widget, I need to make a new API call
+    print('here');
   }
 
   @override
@@ -160,6 +180,14 @@ class _MealListPageState extends State<MealListPage> {
       appBar: AppBar(
         title: const Text("Meal List"),
         centerTitle: true,
+        leading: GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                  (Route<dynamic> route) => false);
+            },
+            child: Icon(Icons.arrow_back)),
         actions: [
           remainingCredit(),
           SizedBox(
@@ -202,6 +230,7 @@ class _MealListPageState extends State<MealListPage> {
                             meal: _meals[index],
                             userBookmarks: widget.userBookmarks,
                             isBookmarked: isBookmarked,
+                            meals: _meals,
                           ),
                         );
                       },

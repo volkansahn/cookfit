@@ -11,9 +11,63 @@ Future<void> addUser(String userID, String email, bool onBoardStatus) {
         'status': 'free',
         'credit': 50,
         'accountDate': DateTime.now(),
+        'fillDate': DateTime.now(),
       })
       .then((value) => print("User added successfully!"))
       .catchError((error) => print("Failed to add user: $error"));
+}
+
+Future<Timestamp> getAccountStartDate(String email) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  try {
+    QuerySnapshot querySnapshot =
+        await users.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userData = querySnapshot.docs.first.data();
+      if (userData != null &&
+          userData is Map<String, dynamic> &&
+          userData.containsKey('accountDate')) {
+        return userData['accountDate'] ?? "";
+      } else {
+        print('accountDate field not found or null.');
+        return Timestamp.now();
+      }
+    } else {
+      print('User not found!');
+      return Timestamp.now();
+    }
+  } catch (e) {
+    print('Error getting user accountDate status: $e');
+    return Timestamp.now();
+  }
+}
+
+Future<Timestamp> getUserFillDate(String email) async {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  try {
+    QuerySnapshot querySnapshot =
+        await users.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var userData = querySnapshot.docs.first.data();
+      if (userData != null &&
+          userData is Map<String, dynamic> &&
+          userData.containsKey('fillDate')) {
+        return userData['fillDate'] ?? "";
+      } else {
+        print('fillDate field not found or null.');
+        return Timestamp.now();
+      }
+    } else {
+      print('User not found!');
+      return Timestamp.now();
+    }
+  } catch (e) {
+    print('Error getting user fillDate status: $e');
+    return Timestamp.now();
+  }
 }
 
 Future<Timestamp> getUserRegisterDate(String email) async {
@@ -122,6 +176,8 @@ Future<void> updateUserAccountStatus(
     credit = 50;
   } else if (accountStatus == 'Premium') {
     credit = 100;
+  } else if (accountStatus == 'Free') {
+    credit = 0;
   }
 
   try {

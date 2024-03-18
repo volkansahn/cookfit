@@ -52,7 +52,6 @@ class _SearchPageState extends State<SearchPage> {
     checkStatus().then(
       (value) {
         if (value != 'Premium') {
-          print(value);
           loadAd();
         }
       },
@@ -112,7 +111,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   String baseURL =
-      'https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeNutrition=true&apiKey=1ed8f4808298475983d634e9d6cb1373';
+      'https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeNutrition=true&apiKey=1ed8f4808298475983d634e9d6cb1373&number=50';
 
   void paywallViewDidPerformAction(AdaptyUIView view, AdaptyUIAction action) {
     switch (action.type) {
@@ -180,7 +179,7 @@ class _SearchPageState extends State<SearchPage> {
 
             setState(() {
               baseURL =
-                  'https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeNutrition=true&apiKey=1ed8f4808298475983d634e9d6cb1373';
+                  'https://api.spoonacular.com/recipes/complexSearch?instructionsRequired=true&addRecipeNutrition=true&apiKey=1ed8f4808298475983d634e9d6cb1373&number=50';
               _cuisineController.unselectAll();
               _mealController.unselectAll();
               _dietTypeController.unselectAll();
@@ -204,18 +203,51 @@ class _SearchPageState extends State<SearchPage> {
                   builder: (context) => MealListPage(
                     fetchURL: fetchURL,
                     userBookmarks: userBookmarkList,
+                    meals: [],
                   ),
                 ),
               );
             } else {
-              try {
-                paywall = await Adapty().getPaywall(placementId: "123456");
-                print('HEYOOOO');
-              } on AdaptyError catch (adaptyError) {
-                // handle the error
-              } catch (e) {
-                // handle the error
-              }
+              String email = FirebaseAuth.instance.currentUser!.email!;
+              String userID = FirebaseAuth.instance.currentUser!.uid;
+              checkUserStatus(email).then((status) async {
+                if (status == 'trial') {
+                  try {
+                    paywall =
+                        await Adapty().getPaywall(placementId: "trial123456");
+                  } on AdaptyError catch (adaptyError) {
+                    // handle the error
+                  } catch (e) {
+                    // handle the error
+                  }
+                } else if (status == 'basic') {
+                  try {
+                    paywall = await Adapty().getPaywall(placementId: "789456");
+                  } on AdaptyError catch (adaptyError) {
+                    // handle the error
+                  } catch (e) {
+                    // handle the error
+                  }
+                } else if (status == 'premium') {
+                  try {
+                    paywall =
+                        await Adapty().getPaywall(placementId: "premium123456");
+                  } on AdaptyError catch (adaptyError) {
+                    // handle the error
+                  } catch (e) {
+                    // handle the error
+                  }
+                } else {
+                  try {
+                    paywall = await Adapty().getPaywall(placementId: "456123");
+                  } on AdaptyError catch (adaptyError) {
+                    // handle the error
+                  } catch (e) {
+                    // handle the error
+                  }
+                }
+              });
+
               try {
                 view = await AdaptyUI()
                     .createPaywallView(paywall: paywall!, locale: 'en');

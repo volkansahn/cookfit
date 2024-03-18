@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>AdaptyPublicSdkKey</key>
+    <string>public_live_UdEL4sm1.6EjDYK1QnQi4gGP7tKvc</string>
+<key>AdaptyStoreKit2Usage</key>
+    <string>intro_eligibility_check</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>FLTEnableImpeller</key>

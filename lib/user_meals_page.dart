@@ -140,6 +140,7 @@ class _UserMealsState extends State<UserMeals> {
                             meal: userBookmarkList[index],
                             userBookmarks: mealList,
                             isBookmarked: true,
+                            meals: [],
                           ),
                         );
                       },

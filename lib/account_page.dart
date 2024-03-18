@@ -84,65 +84,69 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 80.0, left: 40, right: 40),
-          child: Column(
-            children: [
-              Image.asset(
-                'assets/paywall_image.png', // Replace with your image
-                height: 180,
-                fit: BoxFit.contain,
-              ),
-              SingleChildScrollView(
-                padding: const EdgeInsets.only(top: 80.0, bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _accountEmail(),
-                    const SizedBox(height: 30.0),
-                    _privacyButton(),
-                    const SizedBox(height: 30.0),
-                    _restoreButton(),
-                    const SizedBox(height: 30.0),
-                    Container(
-                      margin: const EdgeInsets.all(5),
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.resolveWith<Color?>(
-                            (Set<MaterialState> states) {
-                              // Return the appropriate color based on the button's state
-                              if (states.contains(MaterialState.pressed)) {
-                                // Return the color when the button is pressed
-                                return Color.fromARGB(255, 224, 40, 40);
-                              }
-                              // Return the default color when the button is not pressed
-                              return Color.fromARGB(255, 230, 75, 75);
-                            },
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 80.0, left: 40, right: 40),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/paywall_image.png', // Replace with your image
+                  height: 180,
+                  fit: BoxFit.contain,
+                ),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: 80.0, bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _accountEmail(),
+                      const SizedBox(height: 30.0),
+                      _privacyButton(),
+                      const SizedBox(height: 30.0),
+                      _restoreButton(),
+                      const SizedBox(height: 30.0),
+                      Container(
+                        margin: const EdgeInsets.all(5),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                                // Return the appropriate color based on the button's state
+                                if (states.contains(MaterialState.pressed)) {
+                                  // Return the color when the button is pressed
+                                  return Color.fromARGB(255, 224, 40, 40);
+                                }
+                                // Return the default color when the button is not pressed
+                                return Color.fromARGB(255, 230, 75, 75);
+                              },
+                            ),
+                          ),
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut().then(
+                                (value) => Navigator.of(context)
+                                    .pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const WidgetTree()),
+                                        (route) => false));
+                          },
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                         ),
-                        onPressed: () async {
-                          await FirebaseAuth.instance.signOut().then((value) =>
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => const WidgetTree()),
-                                  (route) => false));
-                        },
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

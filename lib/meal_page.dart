@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cookfit/firestore_database.dart';
+import 'package:cookfit/meal_list_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -8,8 +9,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../meal.dart';
 
 class MealPage extends StatefulWidget {
-  const MealPage({Key? key, required this.mealData}) : super(key: key);
+  const MealPage({Key? key, required this.mealData, required this.meals})
+      : super(key: key);
   final Meal mealData;
+  final List<Meal> meals;
 
   @override
   State<MealPage> createState() => _MealPageState();
@@ -229,6 +232,20 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
               // SliverAppBar for the Hero image
               SliverAppBar(
                 expandedHeight: 200.0, // Adjust the height as needed
+                leading: GestureDetector(
+                    child: Icon(Icons.arrow_back),
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MealListPage(
+                                    fetchURL: 'no',
+                                    userBookmarks: [],
+                                    meals: widget.meals,
+                                  )),
+                          (Route<dynamic> route) => false);
+                    }),
+
                 flexibleSpace: Stack(
                   fit: StackFit.expand,
                   children: [

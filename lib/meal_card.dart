@@ -8,12 +8,15 @@ class MealCard extends StatefulWidget {
   final Meal meal;
   final List<int> userBookmarks;
   final bool isBookmarked;
+  final List<Meal> meals;
 
-  const MealCard(
-      {super.key,
-      required this.meal,
-      required this.userBookmarks,
-      required this.isBookmarked});
+  const MealCard({
+    super.key,
+    required this.meal,
+    required this.userBookmarks,
+    required this.isBookmarked,
+    required this.meals,
+  });
 
   @override
   State<MealCard> createState() => _MealCardState();
@@ -44,7 +47,10 @@ class _MealCardState extends State<MealCard> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => MealPage(mealData: widget.meal)),
+                builder: (context) => MealPage(
+                      mealData: widget.meal,
+                      meals: widget.meals,
+                    )),
           );
         } else {
           print('Put paywall here');
@@ -106,7 +112,7 @@ class _MealCardState extends State<MealCard> {
                                 Text(
                                   '${widget.meal.readyInMinutes} mins',
                                   style: const TextStyle(
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -116,7 +122,7 @@ class _MealCardState extends State<MealCard> {
                               children: [
                                 const ImageIcon(
                                   AssetImage('assets/flame.png'),
-                                  size: 16.0,
+                                  size: 14.0,
                                   color: Colors.red,
                                 ),
                                 const SizedBox(
@@ -125,7 +131,7 @@ class _MealCardState extends State<MealCard> {
                                 Text(
                                   calories.amount.toString(),
                                   style: const TextStyle(
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -135,7 +141,7 @@ class _MealCardState extends State<MealCard> {
                                 const Text(
                                   'Cal',
                                   style: TextStyle(
-                                    fontSize: 16.0,
+                                    fontSize: 14.0,
                                     color: Colors.black,
                                   ),
                                 ),
