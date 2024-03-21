@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,19 +49,9 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDrXpubYweFjB0S8Q4SCQ8ezfzQnxQg3qk',
-    appId: '1:751634585452:web:45a91b38766292695dc549',
-    messagingSenderId: '751634585452',
-    projectId: 'cookfit-526e0',
-    authDomain: 'cookfit-526e0.firebaseapp.com',
-    storageBucket: 'cookfit-526e0.appspot.com',
-    measurementId: 'G-LBS44KPXQ4',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDX3YhyqdjxNocsp7ixuyt3yiVvVbXmwmA',
-    appId: '1:751634585452:android:9bdebb876b35675c5dc549',
+    appId: '1:751634585452:android:3b3ecbc3305fc1295dc549',
     messagingSenderId: '751634585452',
     projectId: 'cookfit-526e0',
     storageBucket: 'cookfit-526e0.appspot.com',
@@ -70,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '751634585452',
     projectId: 'cookfit-526e0',
     storageBucket: 'cookfit-526e0.appspot.com',
+    iosClientId: '751634585452-dsv7qmdkmko6bcd4h82uc8fts6h00h90.apps.googleusercontent.com',
     iosBundleId: 'com.google.fireabase.presents.cookfit',
   );
 }

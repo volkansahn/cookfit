@@ -38,7 +38,7 @@ class _MealListPageState extends State<MealListPage> {
   bool _isLoaded = false;
   int? userCredits;
   final adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
+      ? 'ca-app-pub-8275958678374376/8820176569'
       : 'ca-app-pub-3940256099942544/2934735716';
 
   Future<String> checkStatus() {
@@ -76,7 +76,7 @@ class _MealListPageState extends State<MealListPage> {
     super.initState();
     checkStatus().then(
       (value) {
-        if (value != 'Premium') {
+        if (value != 'premium') {
           print(value);
           loadAd();
         }
@@ -102,7 +102,6 @@ class _MealListPageState extends State<MealListPage> {
     super.didUpdateWidget(oldWidget);
 
     // id changed in the widget, I need to make a new API call
-    print('here');
   }
 
   @override
@@ -184,7 +183,10 @@ class _MealListPageState extends State<MealListPage> {
             onTap: () {
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(
+                            isFromOnboard: false,
+                          )),
                   (Route<dynamic> route) => false);
             },
             child: Icon(Icons.arrow_back)),

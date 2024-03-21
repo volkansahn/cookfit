@@ -49,7 +49,6 @@ class AuthService {
   }
 
   Future<String?> resetPassword({required String email}) async {
-    print(email);
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       return 'Recover Email has been sent';
@@ -69,8 +68,9 @@ class AuthService {
 //Google sign in
   signInWithGoogle() async {
     //begin interactive sign in process
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    print(gUser?.email);
     //obtain auth details from request
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;
 

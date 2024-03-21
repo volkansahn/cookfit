@@ -1,5 +1,8 @@
+import 'package:adapty_flutter/adapty_flutter.dart';
+import 'package:adapty_ui_flutter/adapty_ui_flutter.dart';
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/meal_page.dart';
+import 'package:cookfit/my_custom_adapty_observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../meal.dart';
@@ -24,6 +27,8 @@ class MealCard extends StatefulWidget {
 
 class _MealCardState extends State<MealCard> {
   late Nutrients calories;
+  AdaptyPaywall? paywall;
+  AdaptyUIView? view;
 
   @override
   void initState() {
@@ -53,7 +58,61 @@ class _MealCardState extends State<MealCard> {
                     )),
           );
         } else {
-          print('Put paywall here');
+          String email = FirebaseAuth.instance.currentUser!.email!;
+          String userID = FirebaseAuth.instance.currentUser!.uid;
+          checkUserStatus(email).then((status) async {
+            if (status == 'trial') {
+              try {
+                paywall = await Adapty().getPaywall(placementId: "trial123456");
+              } on AdaptyError catch (adaptyError) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
+            } else if (status == 'basic') {
+              try {
+                paywall = await Adapty().getPaywall(placementId: "789456");
+              } on AdaptyError catch (adaptyError) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
+            } else if (status == 'premium') {
+              try {
+                paywall =
+                    await Adapty().getPaywall(placementId: "premium123456");
+              } on AdaptyError catch (adaptyError) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
+            } else {
+              try {
+                paywall = await Adapty().getPaywall(placementId: "456123");
+              } on AdaptyError catch (adaptyError) {
+                // handle the error
+              } catch (e) {
+                // handle the error
+              }
+            }
+          });
+
+          try {
+            view = await AdaptyUI()
+                .createPaywallView(paywall: paywall!, locale: 'en');
+          } on AdaptyError catch (e) {
+            // handle the error
+          } catch (e) {
+            // handle the error
+          }
+          try {
+            await view!.present();
+            AdaptyUI().addObserver(MyCustomAdaptyObserver());
+          } on AdaptyError catch (e) {
+            // handle the error
+          } catch (e) {
+            // handle the error
+          }
         }
       },
       child: Card(

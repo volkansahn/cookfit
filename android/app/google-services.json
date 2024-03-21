@@ -12,7 +12,20 @@
           "package_name": "com.google.fireabase.presents.cookfit"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "751634585452-mh2bsmtr1je40naci6g10osvj8fpqq1k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.google.fireabase.presents.cookfit",
+            "certificate_hash": "b7b17b680e2ff7b8318ba107971ac588e4938aaa"
+          }
+        },
+        {
+          "client_id": "751634585452-9p0381b7kvakcju4ac8qtuuh2m260ica.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDX3YhyqdjxNocsp7ixuyt3yiVvVbXmwmA"
@@ -20,7 +33,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "751634585452-9p0381b7kvakcju4ac8qtuuh2m260ica.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "751634585452-dsv7qmdkmko6bcd4h82uc8fts6h00h90.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.google.fireabase.presents.cookfit"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751634585452:android:3b3ecbc3305fc1295dc549",
+        "android_client_info": {
+          "package_name": "com.volkansahin.cookfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "751634585452-9p0381b7kvakcju4ac8qtuuh2m260ica.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDX3YhyqdjxNocsp7ixuyt3yiVvVbXmwmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "751634585452-9p0381b7kvakcju4ac8qtuuh2m260ica.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "751634585452-dsv7qmdkmko6bcd4h82uc8fts6h00h90.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.google.fireabase.presents.cookfit"
+              }
+            }
+          ]
         }
       }
     }

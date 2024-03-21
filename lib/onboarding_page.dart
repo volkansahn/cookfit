@@ -2,19 +2,26 @@ import 'package:adapty_flutter/adapty_flutter.dart';
 import 'package:adapty_ui_flutter/adapty_ui_flutter.dart';
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/my_custom_adapty_observer.dart';
+import 'package:cookfit/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 import 'home_page.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  AdaptyPaywall? paywall;
+  AdaptyUIView? view;
+
+  @override
   Widget build(BuildContext context) {
-    AdaptyPaywall? paywall;
-    AdaptyUIView? view;
     return IntroductionScreen(
       dotsDecorator: DotsDecorator(
         size: const Size.square(10.0),
@@ -92,39 +99,28 @@ class OnboardingScreen extends StatelessWidget {
         */
       ],
       onDone: () {
-        updateUserOnboardStatus(FirebaseAuth.instance.currentUser!.uid, true);
         // Navigate to the SearchPage when onboarding is completed
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        updateUserOnboardStatus(FirebaseAuth.instance.currentUser!.uid, true)
+            .whenComplete(() => Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const HomePage(
+                            isFromOnboard: true,
+                          )),
+                ));
       },
       showNextButton: false, // Set to true to show the next button
       done: GestureDetector(
           onTap: () async {
-            try {
-              paywall = await Adapty().getPaywall(placementId: "123456");
-            } on AdaptyError catch (adaptyError) {
-              // handle the error
-            } catch (e) {
-              // handle the error
-            }
-            try {
-              view = await AdaptyUI()
-                  .createPaywallView(paywall: paywall!, locale: 'en');
-            } on AdaptyError catch (e) {
-              // handle the error
-            } catch (e) {
-              // handle the error
-            }
-            try {
-              await view!.present();
-              AdaptyUI().addObserver(MyCustomAdaptyObserver());
-            } on AdaptyError catch (e) {
-              // handle the error
-            } catch (e) {
-              // handle the error
-            }
+            updateUserOnboardStatus(
+                    FirebaseAuth.instance.currentUser!.uid, true)
+                .whenComplete(() => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage(
+                                isFromOnboard: true,
+                              )),
+                    ));
           },
           child: const Text("Got It!")),
     );

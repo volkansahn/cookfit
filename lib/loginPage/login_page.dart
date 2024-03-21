@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cookfit/auth.dart';
 import 'package:cookfit/loginPage/square_tile.dart';
 import 'package:cookfit/reset_password_page.dart';
@@ -40,12 +42,13 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       //pop the loading circle
       Navigator.pop(context);
-
+      log(e.message!);
       genericErrorMessage(e.code);
     }
   }
 
   void genericErrorMessage(String message) {
+    log(message);
     showDialog(
       context: context,
       builder: (context) {

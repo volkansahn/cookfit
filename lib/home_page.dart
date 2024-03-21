@@ -10,8 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+  const HomePage({super.key, required this.isFromOnboard});
+  final bool isFromOnboard;
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -55,6 +55,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    if (widget.isFromOnboard) {
+      showPaywall();
+    }
     checkCredit().whenComplete(
       () {
         endTrialIFNeed().whenComplete(
@@ -64,6 +67,32 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Future<void> showPaywall() async {
+    try {
+      paywall = await Adapty().getPaywall(placementId: "123456");
+    } on AdaptyError catch (adaptyError) {
+      // handle the error
+    } catch (e) {
+      // handle the error
+    }
+    try {
+      view =
+          await AdaptyUI().createPaywallView(paywall: paywall!, locale: 'en');
+    } on AdaptyError catch (e) {
+      // handle the error
+    } catch (e) {
+      // handle the error
+    }
+    try {
+      await view!.present();
+      AdaptyUI().addObserver(MyCustomAdaptyObserver());
+    } on AdaptyError catch (e) {
+      // handle the error
+    } catch (e) {
+      // handle the error
+    }
   }
 
   @override

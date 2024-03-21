@@ -44,14 +44,14 @@ class _SearchPageState extends State<SearchPage> {
   AdaptyUIView? view;
 
   final adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
+      ? 'ca-app-pub-8275958678374376/8820176569'
       : 'ca-app-pub-3940256099942544/2934735716';
 
   void initState() {
     super.initState();
     checkStatus().then(
       (value) {
-        if (value != 'Premium') {
+        if (value != 'premium') {
           loadAd();
         }
       },
@@ -192,79 +192,17 @@ class _SearchPageState extends State<SearchPage> {
               _selectedIntolerances.clear();
               _selectedIntolerancesIndexes.clear();
             });
-            bool hasCredit = await getAndUpdateSearchCredit(
-              FirebaseAuth.instance.currentUser?.uid ?? '',
-              FirebaseAuth.instance.currentUser?.email ?? '',
-            );
-            if (hasCredit) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MealListPage(
-                    fetchURL: fetchURL,
-                    userBookmarks: userBookmarkList,
-                    meals: [],
-                  ),
-                ),
-              );
-            } else {
-              String email = FirebaseAuth.instance.currentUser!.email!;
-              String userID = FirebaseAuth.instance.currentUser!.uid;
-              checkUserStatus(email).then((status) async {
-                if (status == 'trial') {
-                  try {
-                    paywall =
-                        await Adapty().getPaywall(placementId: "trial123456");
-                  } on AdaptyError catch (adaptyError) {
-                    // handle the error
-                  } catch (e) {
-                    // handle the error
-                  }
-                } else if (status == 'basic') {
-                  try {
-                    paywall = await Adapty().getPaywall(placementId: "789456");
-                  } on AdaptyError catch (adaptyError) {
-                    // handle the error
-                  } catch (e) {
-                    // handle the error
-                  }
-                } else if (status == 'premium') {
-                  try {
-                    paywall =
-                        await Adapty().getPaywall(placementId: "premium123456");
-                  } on AdaptyError catch (adaptyError) {
-                    // handle the error
-                  } catch (e) {
-                    // handle the error
-                  }
-                } else {
-                  try {
-                    paywall = await Adapty().getPaywall(placementId: "456123");
-                  } on AdaptyError catch (adaptyError) {
-                    // handle the error
-                  } catch (e) {
-                    // handle the error
-                  }
-                }
-              });
 
-              try {
-                view = await AdaptyUI()
-                    .createPaywallView(paywall: paywall!, locale: 'en');
-              } on AdaptyError catch (e) {
-                // handle the error
-              } catch (e) {
-                // handle the error
-              }
-              try {
-                await view!.present();
-                AdaptyUI().addObserver(MyCustomAdaptyObserver());
-              } on AdaptyError catch (e) {
-                // handle the error
-              } catch (e) {
-                // handle the error
-              }
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MealListPage(
+                  fetchURL: fetchURL,
+                  userBookmarks: userBookmarkList,
+                  meals: [],
+                ),
+              ),
+            );
           },
           child: const Text(
             "Let's Cook",
@@ -329,12 +267,12 @@ class _SearchPageState extends State<SearchPage> {
       barrierDismissible: false,
       textFields: [
         DialogTextField(
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.name,
           initialText: ingredient,
         ),
       ],
     ).then((value) {
-      if (value != null && value.isNotEmpty) {
+      if (value != null && value.isNotEmpty && value.length > 1) {
         setState(() {
           // Replace the edited ingredient in the list
           final index = _ingredientButtons.indexOf(ingredient);
@@ -395,14 +333,16 @@ class _SearchPageState extends State<SearchPage> {
                             barrierDismissible: false,
                             textFields: [
                               const DialogTextField(
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.text,
                                 hintText: 'Lelegume',
                               )
                             ],
                           ).then((value) {
-                            setState(() {
-                              _ingredientButtons.add(value![0].toString());
-                            });
+                            if (value != null && value[0].isNotEmpty) {
+                              setState(() {
+                                _ingredientButtons.add(value![0].toString());
+                              });
+                            }
                           });
                         },
                         child: const Text(

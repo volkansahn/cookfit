@@ -1,3 +1,4 @@
+import 'package:cookfit/privacy_and_terms.dart';
 import 'package:cookfit/purchase_observer.dart';
 import 'package:cookfit/widget_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,27 +39,22 @@ Widget _restoreButton() {
 }
 
 Widget _privacyButton() {
-  return GestureDetector(
-    onTap: () {
-      print('go to privacy & terms');
-    },
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.security),
-            SizedBox(width: 10),
-            Text('Privacy & Terms',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                )),
-          ],
-        ),
-        Icon(Icons.chevron_right),
-      ],
-    ),
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Row(
+        children: [
+          Icon(Icons.security),
+          SizedBox(width: 10),
+          Text('Privacy & Terms',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )),
+        ],
+      ),
+      Icon(Icons.chevron_right),
+    ],
   );
 }
 
@@ -102,7 +98,15 @@ class _AccountPageState extends State<AccountPage> {
                     children: [
                       _accountEmail(),
                       const SizedBox(height: 30.0),
-                      _privacyButton(),
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PrivacyAndTermsPage()),
+                            );
+                          },
+                          child: _privacyButton()),
                       const SizedBox(height: 30.0),
                       _restoreButton(),
                       const SizedBox(height: 30.0),

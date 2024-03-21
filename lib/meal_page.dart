@@ -24,7 +24,7 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
 
   InterstitialAd? _interstitialAd;
   final String _adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
+      ? 'ca-app-pub-8275958678374376/1898162108'
       : 'ca-app-pub-3940256099942544/4411468910';
   BannerAd? _bannerAdDescription;
   BannerAd? _bannerAdIngredients;
@@ -32,7 +32,7 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
 
   bool _isLoaded = false;
   final adUnitId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
+      ? 'ca-app-pub-8275958678374376/8820176569'
       : 'ca-app-pub-3940256099942544/2934735716';
 
   Future<String> checkStatus() {
@@ -117,7 +117,7 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
     _tabController = TabController(length: 3, vsync: this);
     checkStatus().then(
       (value) {
-        if (value != 'Premium') {
+        if (value != 'premium') {
           loadDescriptionAd();
           loadIngredientsAd();
           loadInstructionAd();
@@ -180,7 +180,7 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
     if (_isBookmarked == false) {
       checkUserStatus(FirebaseAuth.instance.currentUser!.email!).then(
         (value) {
-          if (value != 'Premium') {
+          if (value != 'premium') {
             _loadInterstitialAd();
           }
         },
@@ -204,7 +204,8 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
   }
 
   Color _calculateButtonColor(String? imageUrl) {
-    const Color defaultColor = Colors.white; // Default color for the button
+    const Color defaultColor =
+        Color.fromARGB(255, 0, 0, 0); // Default color for the button
     if (imageUrl == null || imageUrl.isEmpty) {
       return defaultColor; // Return default color if image URL is null or empty
     }
@@ -267,16 +268,16 @@ class _MealPageState extends State<MealPage> with TickerProviderStateMixin {
                           icon: _isBookmarked
                               ? Icon(
                                   Icons.bookmark,
-                                  weight: 800,
+                                  weight: 900,
                                   color: _calculateButtonColor(
                                       widget.mealData.image),
-                                  size: 36.0,
+                                  size: 42.0,
                                 )
                               : Icon(Icons.bookmark_border,
-                                  weight: 800,
+                                  weight: 900,
                                   color: _calculateButtonColor(
                                       widget.mealData.image),
-                                  size: 36.0),
+                                  size: 42.0),
                         ),
                       ),
                     )

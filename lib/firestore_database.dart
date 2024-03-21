@@ -8,7 +8,7 @@ Future<void> addUser(String userID, String email, bool onBoardStatus) {
       .set({
         'email': email,
         'isOnboarded': onBoardStatus,
-        'status': 'free',
+        'status': 'trial',
         'credit': 50,
         'accountDate': DateTime.now(),
         'fillDate': DateTime.now(),
@@ -172,11 +172,11 @@ Future<void> updateUserAccountStatus(
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   int credit = 0;
 
-  if (accountStatus == 'Basic') {
+  if (accountStatus == 'basic') {
     credit = 50;
-  } else if (accountStatus == 'Premium') {
+  } else if (accountStatus == 'premium') {
     credit = 100;
-  } else if (accountStatus == 'Free') {
+  } else if (accountStatus == 'free') {
     credit = 0;
   }
 

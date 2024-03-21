@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cookfit/firestore_database.dart';
 import 'package:cookfit/loginPage/square_tile.dart';
 import 'package:cookfit/onboarding_page.dart';
@@ -31,42 +33,43 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         });
 
-    try {
-      // check if both password and confirm pasword is same
-      if (passwordController.text == confirmPasswordController.text) {
-        await AuthService()
-            .registration(
-          email: emailController.text,
-          password: passwordController.text,
-        )
-            .then((message) async {
+    /*
+         .then((message) async {
           if (message!.contains('Success')) {
-            await addUser(FirebaseAuth.instance.currentUser!.uid,
-                    emailController.text, false)
-                .then(
-              (value) => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (context) => const OnboardingScreen()),
-              ),
-            );
+            
           }
         });
-      } else {
-        //show error password dont match
-        genericErrorMessage("Password don't match!");
+    */
+    // check if both password and confirm pasword is same
+    if (passwordController.text == confirmPasswordController.text) {
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        //pop the loading circle
+        Navigator.pop(context);
+
+        await addUser(FirebaseAuth.instance.currentUser!.uid,
+                emailController.text, false)
+            .then((value) => Navigator.pop(context));
+      } on FirebaseAuthException catch (e) {
+        //pop the loading circle
+
+        log(e.message!);
+        genericErrorMessage(e.code);
       }
-
-      //pop the loading circle
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      //pop the loading circle
+    } else {
       Navigator.pop(context);
 
-      genericErrorMessage(e.code);
+      //show error password dont match
+      genericErrorMessage("Password don't match!");
     }
   }
 
   void genericErrorMessage(String message) {
+    log(message!);
+
     showDialog(
       context: context,
       builder: (context) {

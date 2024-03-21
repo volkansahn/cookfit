@@ -32,17 +32,21 @@ class _WidgetTreeState extends State<WidgetTree> {
           return FutureBuilder<bool>(
             future: getUserOnboardStatus(user.email ?? ''),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+              if (snapshot.hasData) {
+                if (snapshot.data != null) {
+                  bool isOnboarded = snapshot.data!;
 
-              final isOnboarded = snapshot.data ?? false;
-              if (isOnboarded) {
-                // User is onboarded, show home page
-                return const HomePage();
+                  if (isOnboarded) {
+                    return HomePage(isFromOnboard: false);
+                  } else {
+                    return OnboardingScreen();
+                  }
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
               } else {
-                // User is not onboarded, show onboarding page
-                return const OnboardingScreen();
+                print('here');
+                return const Center(child: CircularProgressIndicator());
               }
             },
           );
